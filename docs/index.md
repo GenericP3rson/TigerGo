@@ -18,13 +18,13 @@ package main
 import "github.com/GenericP3rson/TigerGo"
 
 func main() {
-   conn := TigerGo.TigerGraphConnection(
+   conn := TigerGo.TigerGraphConnection{
       Token: "TOKEN",
       Host: "https://SUBDOMAIN.i.tgcloud.io",
       GraphName: "GRAPHNAME",
       Username: "tigergraph",
       Password: "PASSWORD"
-   )
+   }
 }
 ```
 
@@ -39,13 +39,13 @@ import(
 )
 
 func main() {
-   conn := TigerGo.TigerGraphConnection(
+   conn := TigerGo.TigerGraphConnection{
       Token: "", // Leaving it empty for now
       Host: "https://SUBDOMAIN.i.tgcloud.io",
       GraphName: "GRAPHNAME",
       Username: "tigergraph",
       Password: "PASSWORD"
-   )
+   }
    fmt.Println(conn.GetToken())
 }
 ```

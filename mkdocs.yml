@@ -1,0 +1,12 @@
+site_name: TigerGo
+
+nav:
+  - Home: index.md
+  - Core Functions:
+    - Vertex Functions: vertex.md
+    - Edge Functions: edge.md
+    - Query Functions: query.md
+    - Other Functions: other.md
+
+theme:
+  name: material

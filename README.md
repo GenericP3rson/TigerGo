@@ -1,6 +1,6 @@
 # TigerGo
 
-Welcome to TigerGo, a Go TigerGraph wrapper!
+Welcome to TigerGo, a Go TigerGraph wrapper! To get started, check out the documentation [here](https://GenericP3rson.github.io/TigerGo/)!
 
 ## Quickstart
 

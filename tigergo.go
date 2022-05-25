@@ -416,16 +416,26 @@ func (conn TigerGraphConnection) GetEdges(sourceVertexType string, sourceVertexI
 
 /*
 QUERY FUNCTIONS:
-[√] Run Query -> TODO: ADD PARAMS
+[√] Run Query
 */
 
-func (conn TigerGraphConnection) RunInstalledQuery(queryName string) string {
+func (conn TigerGraphConnection) RunInstalledQuery(queryName string, params map[string]string) string {
+
+	url_params := ""
+
+	for k, v := range params {
+		url_params += k + "=" + v + "&"
+	}
+
+	url_params = url_params[:len(url_params)-1]
+
+	fmt.Println(url_params)
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/query/%s/%s", conn.Host, conn.GraphName, queryName), nil) // Makes GET Request
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/query/%s/%s?%s", conn.Host, conn.GraphName, queryName, url_params), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
 		return err.Error()

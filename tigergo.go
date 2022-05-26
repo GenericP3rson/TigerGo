@@ -202,18 +202,21 @@ VERTEX FUNCTIONS:
 [√] UpsertVertex
 */
 
-func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, params map[string]string) string {
+func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, attributes map[string]string) string {
 
-	p := "{"
+	params := "{"
 
-	for k, v := range params {
-		p += fmt.Sprintf("\"%s\": {\"value\": \"%s\"}, ", k, v) // Parse the parameters
+	for k, v := range attributes {
+		params += fmt.Sprintf("\"%s\": {\"value\": \"%s\"}, ", k, v) // Parse the parameters
 	}
 
-	p = p[:len(p)-2]
-	p += "}"
+	if attributes != nil { // Ignore this line of code if there are no attributes
+		params = params[:len(params)-2]
+	}
 
-	data := strings.NewReader(fmt.Sprintf(`{"vertices":{"%s":{"%s":%s}}}`, vertexType, vertexId, p))
+	params += "}"
+
+	data := strings.NewReader(fmt.Sprintf(`{"vertices":{"%s":{"%s":%s}}}`, vertexType, vertexId, params))
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
@@ -397,6 +400,48 @@ EDGE FUNCTIONS:
 [√] DelEdges
 [ ] UpsertEdge
 */
+
+func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string, attributes map[string]string) string {
+
+	params := "{"
+
+	for k, v := range attributes {
+		params += fmt.Sprintf("\"%s\": {\"value\": \"%s\"}, ", k, v) // Parse the parameters
+	}
+
+	if attributes != nil { // Ignore this line of code if there are no attributes
+		params = params[:len(params)-2]
+	}
+
+	params += "}"
+
+	data := strings.NewReader(fmt.Sprintf(`{"edges":{"%s":{"%s":{"%s":{"%s":{"%s":%s}}}}}}`, sourceVertexType, sourceVertexId, edgeType, targetVertexType, targetVertexId, params))
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
+
+	if err != nil {
+		return err.Error() // Check for errors
+	}
+
+	req.Header.Set("Authorization", "Bearer "+conn.Token)
+
+	response, err := http.DefaultClient.Do(req) // Executes POST request
+
+	if err != nil {
+		return err.Error() // Check for error
+	}
+
+	body, err := ioutil.ReadAll(response.Body) // Read the response body
+	if err != nil {                            // Check for errors
+		return err.Error()
+	}
+
+	sb := string(body) // Save response as a string
+
+	defer response.Body.Close() // Close request
+
+	return sb
+}
 
 func (conn TigerGraphConnection) DelEdges(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string) string {
 

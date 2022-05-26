@@ -51,7 +51,12 @@ func (conn TigerGraphConnection) GetToken() string {
 
 	defer response.Body.Close() // Close request
 
-	return sb // Return the endpoints
+	var jsonMap map[string]interface{} // Create map
+	json.Unmarshal([]byte(sb), &jsonMap)
+
+	mess := jsonMap["results"] // Grab the value of "message"
+
+	return fmt.Sprintf("%v", mess) // Return message contents
 
 }
 
@@ -194,8 +199,47 @@ VERTEX FUNCTIONS:
 [√] GetVertexCount
 [√] DelVertices
 [√] DelVerticesById
-[ ] UpsertVertex
+[√] UpsertVertex
 */
+
+func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, params map[string]string) string {
+
+	p := "{"
+
+	for k, v := range params {
+		p += fmt.Sprintf("\"%s\": {\"value\": \"%s\"}, ", k, v) // Parse the parameters
+	}
+
+	p = p[:len(p)-2]
+	p += "}"
+
+	data := strings.NewReader(fmt.Sprintf(`{"vertices":{"%s":{"%s":%s}}}`, vertexType, vertexId, p))
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
+
+	if err != nil {
+		return err.Error() // Check for errors
+	}
+
+	req.Header.Set("Authorization", "Bearer "+conn.Token)
+
+	response, err := http.DefaultClient.Do(req) // Executes POST request
+
+	if err != nil {
+		return err.Error() // Check for error
+	}
+
+	body, err := ioutil.ReadAll(response.Body) // Read the response body
+	if err != nil {                            // Check for errors
+		return err.Error()
+	}
+
+	sb := string(body) // Save response as a string
+
+	defer response.Body.Close() // Close request
+
+	return sb
+}
 
 func (conn TigerGraphConnection) DelVerticesById(vertexType string, vertexId string) string {
 

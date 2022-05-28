@@ -57,7 +57,6 @@ func (conn TigerGraphConnection) GetToken() string {
 	mess := jsonMap["results"] // Grab the value of "message"
 
 	return fmt.Sprintf("%v", mess) // Return message contents
-
 }
 
 func (conn TigerGraphConnection) GetEndpoints(builtin bool, dynamic bool, static bool) string {
@@ -398,7 +397,7 @@ func (conn TigerGraphConnection) GetVertexCount(vertexType string) string {
 EDGE FUNCTIONS:
 [√] GetEdges
 [√] DelEdges
-[ ] UpsertEdge
+[√] UpsertEdge
 */
 
 func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string, attributes map[string]string) string {
@@ -414,6 +413,8 @@ func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVerte
 	}
 
 	params += "}"
+
+	fmt.Println(params)
 
 	data := strings.NewReader(fmt.Sprintf(`{"edges":{"%s":{"%s":{"%s":{"%s":{"%s":%s}}}}}}`, sourceVertexType, sourceVertexId, edgeType, targetVertexType, targetVertexId, params))
 

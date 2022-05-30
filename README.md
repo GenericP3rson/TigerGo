@@ -33,3 +33,5 @@ func main() {
 ## Blogs
 
 Check out an introduction to some of the features of this library with TigerGraph's COVID-19 Starter Kit [here](https://medium.com/@shreya-chaudhary/an-introduction-to-using-tigergraph-with-go-exploring-covid-19-patient-cases-f2c0e45849e4)!
+
+Check out how to use TigerGo with Gin Gonic to build a graph-powered web server [here](https://shreya-chaudhary.medium.com/leveraging-a-tigergraph-graph-database-with-a-web-server-in-go-for-hackathon-registrations-f640de0d2fd2).

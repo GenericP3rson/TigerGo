@@ -27,11 +27,11 @@ type TigerGraphConnection struct {
 GENERAL FUNCTIONS
 */
 
-func (conn TigerGraphConnection) GetToken() string {
+func (conn TigerGraphConnection) GetToken() (string, error) {
 	data := strings.NewReader(`{"graph": ` + conn.GraphName + `}`)            // Data is Graph
 	req, err := http.NewRequest("POST", conn.Host+":9000/requesttoken", data) // Set up POST reqest
 	if err != nil {                                                           // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.SetBasicAuth(conn.Username, conn.Password)                      // Create authentication
@@ -39,24 +39,32 @@ func (conn TigerGraphConnection) GetToken() string {
 
 	response, err := http.DefaultClient.Do(req) // Create request
 	if err != nil {                             // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
-	defer response.Body.Close() // Close request
+	type Res struct { // Result structure
+		Code string 
+		Expiration int
+		Error bool
+		Message string
+		Results map[string]string
+	}
 
-	var jsonMap map[string]interface{} // Create map
-	json.Unmarshal([]byte(sb), &jsonMap)
+	var resp Res	
+	json.Unmarshal([]byte(sb), &resp) // Maps response to structure
 
-	mess := jsonMap["results"] // Grab the value of "message"
-
-	return fmt.Sprintf("%v", mess) // Return message contents
+	if resp.Error {
+		return "", fmt.Errorf(resp.Message) // If there is an error, return the message
+	} else {
+		return resp.Results["token"], nil // Otherwise, return the token
+	}
 }
 
 func (conn TigerGraphConnection) GetEndpoints(builtin bool, dynamic bool, static bool) string {

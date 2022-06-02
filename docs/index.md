@@ -55,3 +55,4 @@ func main() {
 Check out a few blogs and tutorials using TigerGo!
 
 - [An Introduction to Using TigerGraph with Go: Exploring COVID-19 Patient Cases](https://towardsdatascience.com/an-introduction-to-using-tigergraph-with-go-exploring-covid-19-patient-cases-f2c0e45849e4)
+- [Leveraging a TigerGraph Graph Database with a Web Server in Go for Hackathon Registrations](https://medium.com/@shreya-chaudhary/leveraging-a-tigergraph-graph-database-with-a-web-server-in-go-for-hackathon-registrations-f640de0d2fd2)

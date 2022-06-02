@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/GenericP3rson/TigerGo)](https://goreportcard.com/report/github.com/GenericP3rson/TigerGo)
+
 # TigerGo
 
 Welcome to TigerGo, a Go TigerGraph wrapper! To get started, check out the documentation [here](https://GenericP3rson.github.io/TigerGo/)!

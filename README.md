@@ -1,4 +1,5 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/GenericP3rson/TigerGo)](https://goreportcard.com/report/github.com/GenericP3rson/TigerGo)
+[![Discord](https://img.shields.io/badge/Discord-tigergraph-orange)](https://discord.gg/tigergraph)
 
 # TigerGo
 

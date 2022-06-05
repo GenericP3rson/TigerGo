@@ -211,20 +211,21 @@ VERTEX FUNCTIONS:
 
 func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, attributes map[string]string) (string, error) {
 
-	params := "{"
+	modified_attributes := map[string]map[string]interface{}{}
 
-	for k, v := range attributes {
-		params += fmt.Sprintf("\"%s\": {\"value\": \"%s\"}, ", k, v) // Parse the parameters
+	for key, value := range attributes {
+		modified_attributes[key] = map[string]interface{}{"value": value}
 	}
 
-	if attributes != nil { // Ignore this line of code if there are no attributes
-		params = params[:len(params)-2]
+	json_map := map[string]map[string]map[string]map[string]map[string]interface{}{"vertices": map[string]map[string]map[string]map[string]interface{}{vertexType: map[string]map[string]map[string]interface{}{vertexId: modified_attributes}}}
+
+	params_json, err := json.Marshal(json_map)
+
+	if err != nil {
+		return "", err
 	}
 
-	params += "}"
-
-	data := strings.NewReader(fmt.Sprintf(`{"vertices":{"%s":{"%s":%s}}}`, vertexType, vertexId, params))
-
+	data := strings.NewReader(string(params_json))
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
 	if err != nil {
@@ -424,7 +425,7 @@ func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVerte
 		return "", err
 	}
 
-	data := strings.NewReader(fmt.Sprintf("%s", string(params_json)))
+	data := strings.NewReader(string(params_json))
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
 	if err != nil {

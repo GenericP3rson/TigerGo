@@ -67,7 +67,7 @@ func (conn TigerGraphConnection) GetToken() (string, error) {
 	}
 }
 
-func (conn TigerGraphConnection) GetEndpoints(builtin bool, dynamic bool, static bool) string {
+func (conn TigerGraphConnection) GetEndpoints(builtin bool, dynamic bool, static bool) (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -76,32 +76,32 @@ func (conn TigerGraphConnection) GetEndpoints(builtin bool, dynamic bool, static
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/endpoints?builtin=%t&dynamic=%t&static=%t", conn.Host, builtin, dynamic, static), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb // Return the endpoints
+	return sb, nil // Return the endpoints
 
 }
 
-func (conn TigerGraphConnection) GetStatistics(seconds int) string {
+func (conn TigerGraphConnection) GetStatistics(seconds int) (string, error) {
 
 	if seconds < 0 || seconds > 60 {
-		return "Seconds value invalid, must be 0-60 inclusive"
+		return "", fmt.Errorf("Seconds value invalid, must be 0-60 inclusive")
 	}
 
 	client := &http.Client{ // Creates client
@@ -111,29 +111,29 @@ func (conn TigerGraphConnection) GetStatistics(seconds int) string {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/statistics?seconds=%d", conn.Host, seconds), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb // Return the endpoints
+	return sb, nil // Return the endpoints
 
 }
 
-func (conn TigerGraphConnection) Echo() string {
+func (conn TigerGraphConnection) Echo() (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -142,18 +142,18 @@ func (conn TigerGraphConnection) Echo() string {
 	req, err := http.NewRequest("GET", conn.Host+":9000/echo", nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
@@ -165,11 +165,11 @@ func (conn TigerGraphConnection) Echo() string {
 
 	mess := jsonMap["message"] // Grab the value of "message"
 
-	return fmt.Sprintf("%v", mess) // Return message contents
+	return fmt.Sprintf("%v", mess), nil // Return message contents
 
 }
 
-func (conn TigerGraphConnection) GetVersion() string {
+func (conn TigerGraphConnection) GetVersion() (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -178,25 +178,25 @@ func (conn TigerGraphConnection) GetVersion() string {
 	req, err := http.NewRequest("GET", conn.Host+":9000/version", nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
 /*
@@ -281,7 +281,7 @@ func (conn TigerGraphConnection) DelVerticesById(vertexType string, vertexId str
 	return sb
 }
 
-func (conn TigerGraphConnection) DelVertices(vertexType string) string {
+func (conn TigerGraphConnection) DelVertices(vertexType string) (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -290,28 +290,28 @@ func (conn TigerGraphConnection) DelVertices(vertexType string) string {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s:9000/graph/%s/vertices/%s", conn.Host, conn.GraphName, vertexType), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
-func (conn TigerGraphConnection) GetVertices(vertexType string) string {
+func (conn TigerGraphConnection) GetVertices(vertexType string) (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -320,28 +320,28 @@ func (conn TigerGraphConnection) GetVertices(vertexType string) string {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/graph/%s/vertices/%s", conn.Host, conn.GraphName, vertexType), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
-func (conn TigerGraphConnection) GetVerticesById(vertexType string, vertexId string) string {
+func (conn TigerGraphConnection) GetVerticesById(vertexType string, vertexId string) (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -350,28 +350,28 @@ func (conn TigerGraphConnection) GetVerticesById(vertexType string, vertexId str
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/graph/%s/vertices/%s/%s", conn.Host, conn.GraphName, vertexType, vertexId), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
-func (conn TigerGraphConnection) GetVertexCount(vertexType string) string {
+func (conn TigerGraphConnection) GetVertexCount(vertexType string) (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -380,25 +380,25 @@ func (conn TigerGraphConnection) GetVertexCount(vertexType string) string {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/graph/%s/vertices/%s?count_only=true", conn.Host, conn.GraphName, vertexType), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
 /*
@@ -408,7 +408,7 @@ EDGE FUNCTIONS:
 [√] UpsertEdge
 */
 
-func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string, attributes map[string]string) string {
+func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string, attributes map[string]string) (string, error) {
 
 	params := "{"
 
@@ -429,7 +429,7 @@ func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVerte
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
 	if err != nil {
-		return err.Error() // Check for errors
+		return "", err // Check for errors
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token)
@@ -437,22 +437,22 @@ func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVerte
 	response, err := http.DefaultClient.Do(req) // Executes POST request
 
 	if err != nil {
-		return err.Error() // Check for error
+		return "", err // Check for error
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
-func (conn TigerGraphConnection) DelEdges(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string) string {
+func (conn TigerGraphConnection) DelEdges(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string) (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -461,28 +461,28 @@ func (conn TigerGraphConnection) DelEdges(sourceVertexType string, sourceVertexI
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s:9000/graph/%s/edges/%s/%s/%s/%s/%s", conn.Host, conn.GraphName, sourceVertexType, sourceVertexId, edgeType, targetVertexType, targetVertexId), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
-func (conn TigerGraphConnection) GetEdges(sourceVertexType string, sourceVertexId string) string {
+func (conn TigerGraphConnection) GetEdges(sourceVertexType string, sourceVertexId string) (string, error) {
 
 	client := &http.Client{ // Creates client
 		Timeout: time.Second * 10,
@@ -491,25 +491,25 @@ func (conn TigerGraphConnection) GetEdges(sourceVertexType string, sourceVertexI
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/graph/%s/edges/%s/%s/_", conn.Host, conn.GraphName, sourceVertexType, sourceVertexId), nil) // Makes GET Request
 
 	if err != nil { // Checks for errors
-		return err.Error()
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
 /*

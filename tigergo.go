@@ -408,24 +408,23 @@ EDGE FUNCTIONS:
 [√] UpsertEdge
 */
 
-func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string, attributes map[string]string) (string, error) {
+func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVertexId string, edgeType string, targetVertexType string, targetVertexId string, attributes map[string]interface{}) (string, error) {
 
-	params := "{"
+	modified_attributes := map[string]map[string]interface{}{}
 
-	for k, v := range attributes {
-		params += fmt.Sprintf("\"%s\": {\"value\": \"%s\"}, ", k, v) // Parse the parameters
+	for key, value := range attributes {
+		modified_attributes[key] = map[string]interface{}{"value": value}
 	}
 
-	if attributes != nil { // Ignore this line of code if there are no attributes
-		params = params[:len(params)-2]
+	json_map := map[string]map[string]map[string]map[string]map[string]map[string]map[string]map[string]interface{}{"edges": map[string]map[string]map[string]map[string]map[string]map[string]map[string]interface{}{sourceVertexType: map[string]map[string]map[string]map[string]map[string]map[string]interface{}{sourceVertexId: map[string]map[string]map[string]map[string]map[string]interface{}{edgeType: map[string]map[string]map[string]map[string]interface{}{targetVertexType: map[string]map[string]map[string]interface{}{targetVertexId: modified_attributes}}}}}}
+
+	params_json, err := json.Marshal(json_map)
+
+	if err != nil {
+		return "", err
 	}
 
-	params += "}"
-
-	fmt.Println(params)
-
-	data := strings.NewReader(fmt.Sprintf(`{"edges":{"%s":{"%s":{"%s":{"%s":{"%s":%s}}}}}}`, sourceVertexType, sourceVertexId, edgeType, targetVertexType, targetVertexId, params))
-
+	data := strings.NewReader(fmt.Sprintf("%s", string(params_json)))
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
 	if err != nil {

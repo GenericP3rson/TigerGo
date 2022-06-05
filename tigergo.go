@@ -209,7 +209,7 @@ VERTEX FUNCTIONS:
 [√] UpsertVertex
 */
 
-func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, attributes map[string]string) string {
+func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, attributes map[string]string) (string, error) {
 
 	params := "{"
 
@@ -228,7 +228,7 @@ func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
 	if err != nil {
-		return err.Error() // Check for errors
+		return "", err // Check for errors
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token)
@@ -236,19 +236,19 @@ func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string
 	response, err := http.DefaultClient.Do(req) // Executes POST request
 
 	if err != nil {
-		return err.Error() // Check for error
+		return "", err // Check for error
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }
 
 func (conn TigerGraphConnection) DelVerticesById(vertexType string, vertexId string) string {
@@ -517,42 +517,35 @@ QUERY FUNCTIONS:
 [√] Run Query
 */
 
-func (conn TigerGraphConnection) RunInstalledQuery(queryName string, params map[string]string) string {
+func (conn TigerGraphConnection) RunInstalledQuery(queryName string, params map[string]interface{}) (string, error) {
 
-	url_params := ""
+	params_json, err := json.Marshal(params)
 
-	for k, v := range params {
-		url_params += k + "=" + v + "&"
+	if err != nil {
+		return "", err
 	}
 
-	url_params = url_params[:len(url_params)-1]
+	params_string := strings.NewReader(fmt.Sprintf("%s", string(params_json)))
 
-	fmt.Println(url_params)
-
-	client := &http.Client{ // Creates client
-		Timeout: time.Second * 10,
-	}
-
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s:9000/query/%s/%s?%s", conn.Host, conn.GraphName, queryName, url_params), nil) // Makes GET Request
-
-	if err != nil { // Checks for errors
-		return err.Error()
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/query/%s/%s", conn.Host, conn.GraphName, queryName), params_string)
+	if err != nil {
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
-	response, err := client.Do(req)                       // Make request
+	response, err := http.DefaultClient.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(response.Body) // Read the response body
 	if err != nil {                            // Check for errors
-		return err.Error()
+		return "", err
 	}
 
 	sb := string(body) // Save response as a string
 
 	defer response.Body.Close() // Close request
 
-	return sb
+	return sb, nil
 }

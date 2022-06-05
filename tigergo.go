@@ -11,8 +11,9 @@ import (
 
 /*
 OVERALL TODO
-[ ] Parse the results
+[ ] Parse the results (possibly via a parameter)
 [ ] Add more functions
+[ ] Add more error-catching functions based on JSON output
 */
 
 type TigerGraphConnection struct {
@@ -209,23 +210,21 @@ VERTEX FUNCTIONS:
 [√] UpsertVertex
 */
 
-func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, attributes map[string]string) (string, error) {
+func (conn TigerGraphConnection) UpsertVertex(vertexType string, vertexId string, attributes map[string]interface{}) (string, error) {
 
 	modified_attributes := map[string]map[string]interface{}{}
-
-	for key, value := range attributes {
+	for key, value := range attributes { // Convert attributes to proper format
 		modified_attributes[key] = map[string]interface{}{"value": value}
 	}
 
 	json_map := map[string]map[string]map[string]map[string]map[string]interface{}{"vertices": map[string]map[string]map[string]map[string]interface{}{vertexType: map[string]map[string]map[string]interface{}{vertexId: modified_attributes}}}
 
-	params_json, err := json.Marshal(json_map)
-
-	if err != nil {
+	params_json, err := json.Marshal(json_map) // Convert map to JSON
+	if err != nil { // Check for errors
 		return "", err
 	}
 
-	data := strings.NewReader(string(params_json))
+	data := strings.NewReader(string(params_json)) // Convert JSON to useable data
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
 	if err != nil {
@@ -413,19 +412,18 @@ func (conn TigerGraphConnection) UpsertEdge(sourceVertexType string, sourceVerte
 
 	modified_attributes := map[string]map[string]interface{}{}
 
-	for key, value := range attributes {
+	for key, value := range attributes { // Change attributes to proper format
 		modified_attributes[key] = map[string]interface{}{"value": value}
 	}
 
-	json_map := map[string]map[string]map[string]map[string]map[string]map[string]map[string]map[string]interface{}{"edges": map[string]map[string]map[string]map[string]map[string]map[string]map[string]interface{}{sourceVertexType: map[string]map[string]map[string]map[string]map[string]map[string]interface{}{sourceVertexId: map[string]map[string]map[string]map[string]map[string]interface{}{edgeType: map[string]map[string]map[string]map[string]interface{}{targetVertexType: map[string]map[string]map[string]interface{}{targetVertexId: modified_attributes}}}}}}
+	json_map := map[string]map[string]map[string]map[string]map[string]map[string]map[string]map[string]interface{}{"edges": map[string]map[string]map[string]map[string]map[string]map[string]map[string]interface{}{sourceVertexType: map[string]map[string]map[string]map[string]map[string]map[string]interface{}{sourceVertexId: map[string]map[string]map[string]map[string]map[string]interface{}{edgeType: map[string]map[string]map[string]map[string]interface{}{targetVertexType: map[string]map[string]map[string]interface{}{targetVertexId: modified_attributes}}}}}} // Create map
 
-	params_json, err := json.Marshal(json_map)
-
-	if err != nil {
+	params_json, err := json.Marshal(json_map) // Convert map to JSON
+	if err != nil { // Check for errors
 		return "", err
 	}
 
-	data := strings.NewReader(string(params_json))
+	data := strings.NewReader(string(params_json)) // Convert JSON to readable data
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/graph/%s", conn.Host, conn.GraphName), data) // Makes POST request
 
 	if err != nil {
@@ -519,16 +517,15 @@ QUERY FUNCTIONS:
 
 func (conn TigerGraphConnection) RunInstalledQuery(queryName string, params map[string]interface{}) (string, error) {
 
-	params_json, err := json.Marshal(params)
-
-	if err != nil {
-		return "", err
+	params_json, err := json.Marshal(params) // Convert map to JSON
+	if err != nil { // Check for errors
+		return "", err 
 	}
 
-	params_string := strings.NewReader(fmt.Sprintf("%s", string(params_json)))
+	data := strings.NewReader(fmt.Sprintf("%s", string(params_json))) // Convert JSON to readable data
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/query/%s/%s", conn.Host, conn.GraphName, queryName), params_string)
-	if err != nil {
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s:9000/query/%s/%s", conn.Host, conn.GraphName, queryName), data) // Make request
+	if err != nil { // Check for errors
 		return "", err
 	}
 

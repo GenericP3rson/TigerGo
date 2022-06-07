@@ -80,7 +80,7 @@ func (conn TigerGraphConnection) GetEndpoints(builtin bool, dynamic bool, static
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -115,7 +115,7 @@ func (conn TigerGraphConnection) GetStatistics(seconds int) (string, error) {
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -146,7 +146,7 @@ func (conn TigerGraphConnection) Echo() (string, error) {
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -182,7 +182,7 @@ func (conn TigerGraphConnection) GetVersion() (string, error) {
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -263,7 +263,7 @@ func (conn TigerGraphConnection) DelVerticesById(vertexType string, vertexId str
 		return err.Error()
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return err.Error()
@@ -293,7 +293,7 @@ func (conn TigerGraphConnection) DelVertices(vertexType string) (string, error) 
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -323,7 +323,7 @@ func (conn TigerGraphConnection) GetVertices(vertexType string) (string, error) 
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -353,7 +353,7 @@ func (conn TigerGraphConnection) GetVerticesById(vertexType string, vertexId str
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -383,7 +383,7 @@ func (conn TigerGraphConnection) GetVertexCount(vertexType string) (string, erro
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -462,7 +462,7 @@ func (conn TigerGraphConnection) DelEdges(sourceVertexType string, sourceVertexI
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -492,7 +492,7 @@ func (conn TigerGraphConnection) GetEdges(sourceVertexType string, sourceVertexI
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := client.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
@@ -529,7 +529,7 @@ func (conn TigerGraphConnection) RunInstalledQuery(queryName string, params map[
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorisation header
+	req.Header.Set("Authorization", "Bearer "+conn.Token) // Add authorization header
 	response, err := http.DefaultClient.Do(req)                       // Make request
 	if err != nil {                                       // Check for errors
 		return "", err
